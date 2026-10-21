@@ -1,0 +1,80 @@
+EL ROSCO MALDITO — JACK MORTIS
+Una Noche Para Morirse · octubre 2026
+
+QUÉ TRAE
+- 4 roscos diferentes (Brujos, Fantasmas, Vampiros, Licántropos)
+- 27 letras cada uno (incluida la Ñ), 108 respuestas diferentes
+- Panel privado para leer definiciones y respuestas
+- Botones Correcta / Incorrecta / Pasapalabra / Deshacer
+- Cronómetro individual y control de Pausa / Reanudar
+- Tiempo inicial común (45 s, editable) + segundos ganados de los juegos anteriores
+- Pantalla pública separada para proyectar, sin respuestas
+- Marcador y clasificación automática
+- Modo ensayo sin Firebase
+
+CÓMO SUBIR A GITHUB Y VERCEL
+1. Descomprimí este ZIP.
+2. Subí los archivos index.html, styles.css, app.js, roscos.js, firebase-config.js,
+   la carpeta assets y este LEEME.txt a un repositorio de GitHub.
+   Importante: index.html debe estar en la raíz del repositorio.
+3. En Vercel elegí New Project > Importar repositorio > Deploy.
+   Framework: Other, sin comandos de build, sin variables de entorno.
+4. Abrí el enlace publicado, tocá CREAR SALA DEL ROSCO.
+
+NO HACE FALTA CREAR OTRO FIREBASE
+Esta web incluye los datos del proyecto halloween-jack-mortis que ya compartiste.
+Reutiliza el mismo espacio de salas /rooms y las reglas que publicaste
+para El Hechizo Indescifrable. Cada sala usa un código distinto y un tipo
+que impide confundir los juegos. Necesita autenticación anónima habilitada.
+Si modificaste las reglas de Realtime Database desde entonces, revisá que
+las salas bajo /rooms sean legibles y escribibles por usuarios autenticados.
+
+EL DÍA DE HALLOWEEN
+1. En la computadora o celular de la CONDUCTORA, creá una sala.
+2. Elegí el tiempo base por equipo (45 segundos por defecto).
+3. Escribí cuántos segundos ganó cada equipo en los juegos anteriores.
+4. Tocá COMENZAR LA GRAN FINAL.
+5. Tocá un equipo y luego INICIAR / REANUDAR.
+6. Leé la definición y marcá Correcta, Incorrecta o Pasapalabra.
+   - Verde: correcta (se retira esa letra).
+   - Rojo: incorrecta (se retira esa letra).
+   - Pasapalabra: la letra vuelve al final de las pendientes.
+7. Pausá antes de cambiar de equipo. Cada rosco guarda su tiempo restante.
+8. Cuando los cuatro terminen, se muestra la clasificación automáticamente.
+   También podés usar FINALIZAR PARTIDA si necesitás terminar antes.
+
+PANTALLA PARA PROYECTAR
+- En el panel de conductora tocá PANTALLA PÚBLICA.
+- Abrí el enlace que se abre en la computadora conectada al proyector.
+- Tocá PANTALLA COMPLETA en esa ventana.
+- Muestra el rosco, el equipo, las letras, el reloj y los puntajes;
+  NUNCA muestra las soluciones en pantalla.
+- El botón MOSTRAR DEFINICIONES EN PROYECTOR permite mostrarlas u ocultarlas.
+- Podés conducir desde el celular y proyectar desde la computadora si
+  ambos tienen internet. Firebase sincroniza la pantalla en vivo.
+
+PARA PROBAR SIN ARRUINAR LA PARTIDA
+Abri tu sitio de Vercel agregando ?demo=1 a la dirección.
+Por ejemplo: https://tu-sitio.vercel.app/?demo=1
+Tocá CREAR SALA, ingresá segundos y jugá sola. No modifica la base de datos.
+El modo ensayo usa almacenamiento local del navegador y no se sincroniza
+entre dispositivos diferentes, solo entre pestañas del mismo navegador.
+
+CÓMO SE DEFINE EL GANADOR
+1. Mayor cantidad de letras correctas.
+2. En caso de empate, menor cantidad de respuestas incorrectas.
+3. Si persiste el empate, mayor tiempo restante.
+
+ADVERTENCIAS
+- La conductora debe mantener activa su sesión, especialmente cuando corre
+  el reloj. Evitá que el celular se bloquee durante la partida.
+- El reloj sigue consumiéndose si se minimiza el navegador mientras corre;
+  para detenerlo, tocá PAUSAR.
+- El botón DESHACER restaura la última letra, pero no devuelve el tiempo gastado.
+- Para un evento justo, asigná el mismo tiempo base a los cuatro equipos.
+- No se realizaron pruebas en vivo con tu Firebase; se necesita una prueba
+  en dos dispositivos antes de la noche de Halloween.
+
+EDITAR DEFINICIONES
+Las 108 preguntas y respuestas están en roscos.js. Para modificarlas,
+editalas allí respetando su letra. No se repiten respuestas entre equipos.
