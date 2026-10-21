@@ -68,7 +68,25 @@ async function mutate(fn){if(busy||!roomCode||!isHost())return false;busy=true;t
 const result=await api.runTransaction(api.ref(db,'rooms/'+roomCode),r=>{if(!validRoom(r)||r.hostUid!==uid())return;return fn(r)||undefined},{applyLocally:false});if(!result.committed){notify('No se pudo aplicar el cambio.');return false}return true}catch(e){notify('Error al guardar: '+e.message);return false}finally{busy=false}}
 async function lobbyChange(target){if(room?.phase!=='lobby'||!isHost())return;const numeric=Math.max(0,Math.min(600,Math.trunc(Number(target.value)||0)));await mutate(r=>{if(r.phase!=='lobby')return null;if(target.id==='base-seconds')r.base=numeric;else if(target.dataset.bonus)r.bonuses[target.dataset.bonus]=numeric;else return null;for(const t of TEAMS)r.teams[t.id].remainingMs=(r.base+(r.bonuses[t.id]||0))*1000;return r})}
 async function changeTeam(id){if(room.phase!=='playing'||room.clock.running)return;if(!TEAMS.some(t=>t.id===id))return;await mutate(r=>{if(r.phase!=='playing'||r.clock.running)return null;r.activeTeam=id;r.lastAction={};return r})}
-async function act(type){const id=room?.activeTeam;if(type==='show-clue'){await mutate(r=>{if(r.phase!=='playing')return null;r.showClue=!r.showClue;return r});return}if(!id)return;if(type==='toggle-clock'){
+async function act(type){
+// Las acciones de sala deben funcionar ANTES de elegir un equipo activo.
+if(type==='start-game'){
+  const worked=await mutate(r=>{if(r.phase!=='lobby')return null;r.phase='playing';r.activeTeam='brujos';r.clock={running:false,startedAt:0};r.lastAction={};return r});
+  if(worked)notify('¡Gran final iniciada! Elegí el equipo y tocá Iniciar / Reanudar.');
+  return;
+}
+if(type==='end-all'){
+  if(!confirm('¿Finalizar la partida de los cuatro equipos? Esta acción cierra el juego para todos.'))return;
+  await mutate(r=>{if(r.phase!=='playing')return null;settleClock(r,now());r.clock.running=false;r.phase='finished';r.finishReason='manual';for(const t of TEAMS)r.teams[t.id].status='done';return r});return;
+}
+if(type==='reset'){
+  if(!confirm('¿Reiniciar la final? Se borrarán los aciertos y errores de esta sala.'))return;
+  await mutate(r=>{if(r.phase!=='finished')return null;let fresh=stateSeed(r.code);fresh.hostUid=r.hostUid;fresh.createdAt=r.createdAt;return fresh});return;
+}
+const id=room?.activeTeam;
+if(type==='show-clue'){await mutate(r=>{if(r.phase!=='playing')return null;r.showClue=!r.showClue;return r});return}
+if(!id){notify('Elegí un equipo antes de continuar.');return}
+if(type==='toggle-clock'){
 const t=room.teams[id];if(!room.clock.running&&(t.status==='done'||currentTime(room,id)<=0))return;await mutate(r=>{const at=now();if(r.phase!=='playing')return null;if(r.clock.running){settleClock(r,at);checkFinished(r)}else if(r.teams[r.activeTeam].status!=='done'&&r.teams[r.activeTeam].remainingMs>0){r.clock.running=true;r.clock.startedAt=at}return r});return}
 if(['correct','wrong','pass'].includes(type)){
 const worked=await mutate(r=>{const at=now();if(r.phase!=='playing'||!r.clock.running)return null;const tm=r.activeTeam,t=r.teams[tm];if(!t?.queue?.length)return null;settleClock(r,at);if(t.status==='done'){checkFinished(r);return r}
@@ -79,14 +97,6 @@ await mutate(r=>{if(r.phase!=='playing'||r.clock.running||!r.lastAction?.teamId)
 if(type==='finish-team'){
 if(!confirm('¿Dar por terminado el rosco de '+tname(id)+'? No podrá volver a contestar.'))return;
 await mutate(r=>{if(r.phase!=='playing'||r.clock.running)return null;r.teams[id].status='done';r.lastAction={};checkFinished(r);return r});return}
-if(type==='end-all'){
-if(!confirm('¿Finalizar la partida de los cuatro equipos? Esta acción cierra el juego para todos.'))return;
-await mutate(r=>{if(r.phase!=='playing')return null;settleClock(r,now());r.clock.running=false;r.phase='finished';r.finishReason='manual';for(const t of TEAMS)r.teams[t.id].status='done';return r});return}
-if(type==='start-game'){
-await mutate(r=>{if(r.phase!=='lobby')return null;r.phase='playing';r.activeTeam='';r.clock={running:false,startedAt:0};return r});return}
-if(type==='reset'){
-if(!confirm('¿Reiniciar la final? Se borrarán los aciertos y errores de esta sala.'))return;
-await mutate(r=>{if(r.phase!=='finished')return null;let fresh=stateSeed(r.code);fresh.hostUid=r.hostUid;fresh.createdAt=r.createdAt;return fresh});return}
 }
 async function copy(text){try{await navigator.clipboard.writeText(text);notify('Enlace copiado')}catch{prompt('Copiá este enlace:',text)}}
 function tick(){if(!room)return;document.querySelectorAll('[data-teamtime]').forEach(el=>{const id=el.dataset.teamtime;const ms=currentTime(room,id);el.textContent=fmt(ms);el.classList.toggle('zero',ms<=0)});const id=room.activeTeam;if(id){const base=((room.base||0)+(room.bonuses?.[id]||0))*1000;const el=$('time-bar');if(el)el.style.width=base?`${Math.min(100,100*currentTime(room,id)/base)}%`:'0%';if(room.phase==='playing'&&room.clock.running&&isHost()&&currentTime(room,id)<=0&&!busy){mutate(r=>{if(r.phase!=='playing'||!r.clock.running)return null;settleClock(r,now());checkFinished(r);return r})}}}

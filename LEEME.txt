@@ -1,3 +1,10 @@
+VERSIÓN CORREGIDA — 21/10/2026
+- Se corrigió el botón «Comenzar la gran final»: iniciaba sin equipo activo y no respondía.
+- Al iniciar, aparece Brujos seleccionado y el cronómetro pausado.
+- Se corrigió también «Finalizar la partida» y «Preparar otra final» para que funcionen sin depender de un equipo activo.
+- Para actualizar tu sitio: reemplazá app.js en GitHub con el app.js de este ZIP, o reemplazá todos los archivos.
+- Probá https://TU-SITIO.vercel.app/?demo=1 para ensayar sin tocar Firebase.
+
 EL ROSCO MALDITO — JACK MORTIS
 Una Noche Para Morirse · octubre 2026
 
