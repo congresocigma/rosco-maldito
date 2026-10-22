@@ -1,3 +1,13 @@
+VERSIÓN TURNOS ALTERNADOS — 21/10/2026
+- PASAPALABRA guarda la letra como pendiente, pausa el reloj del equipo y selecciona el siguiente equipo con tiempo.
+- El nuevo equipo queda PAUSADO hasta tocar INICIAR / REANUDAR.
+- Cada grupo conserva sus aciertos, errores, letras pendientes y su propio tiempo restante.
+- Nuevo botón «PAUSAR Y PASAR AL SIGUIENTE» para alternar sin marcar una letra como pasapalabra.
+- Tocando la pestaña de otro equipo, se pausa el actual y se cambia sin borrar avances.
+- Si un equipo completa su rosco o se le termina el reloj, se prepara el siguiente.
+- Se mantiene el modo ensayo ?demo=1, la pantalla pública y tu configuración Firebase.
+- Reemplazá app.js en GitHub para actualizar la página sin modificar lo demás.
+
 VERSIÓN CORREGIDA — 21/10/2026
 - Se corrigió el botón «Comenzar la gran final»: iniciaba sin equipo activo y no respondía.
 - Al iniciar, aparece Brujos seleccionado y el cronómetro pausado.
